@@ -8,6 +8,8 @@
 import Foundation
 import DatadogInternal
 
+import DatadogTrace
+
 /// Object is responsible for getting the RUM context, randomising the sampling rate,
 /// starting/stopping the recording scheduler as needed and propagating `has_replay` to other features.
 internal class RecordingCoordinator {

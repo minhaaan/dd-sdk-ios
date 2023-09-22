@@ -168,7 +168,10 @@ let package = Package(
 
         .target(
             name: "DatadogSessionReplay",
-            dependencies: ["DatadogInternal"],
+            dependencies: [
+                "DatadogInternal",
+                .target(name: "DatadogTrace"),
+            ],
             path: "DatadogSessionReplay/Sources"
         ),
         .testTarget(

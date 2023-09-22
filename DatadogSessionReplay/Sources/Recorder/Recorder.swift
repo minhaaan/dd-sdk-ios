@@ -7,6 +7,7 @@
 #if os(iOS)
 import Foundation
 import DatadogInternal
+import DatadogTrace
 
 /// A type managing Session Replay recording.
 internal protocol Recording {
@@ -109,12 +110,14 @@ internal class Recorder: Recording {
     /// **Note**: This is called on the main thread.
     func captureNextRecord(_ recorderContext: Context) {
         do {
+            let span = Tracer.shared().startSpan(operationName: "View Tree Snapshot")
             guard let viewTreeSnapshot = try viewTreeSnapshotProducer.takeSnapshot(with: recorderContext) else {
                 // There is nothing visible yet (i.e. the key window is not yet ready).
                 return
             }
             let touchSnapshot = touchSnapshotProducer.takeSnapshot(context: recorderContext)
             snapshotProcessor.process(viewTreeSnapshot: viewTreeSnapshot, touchSnapshot: touchSnapshot)
+            span.finish()
         } catch let error {
             telemetry.error("[SR] Failed to take snapshot", error: DDError(error: error))
         }

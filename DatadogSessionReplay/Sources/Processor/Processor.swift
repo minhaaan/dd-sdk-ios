@@ -7,6 +7,7 @@
 #if os(iOS)
 import Foundation
 import DatadogInternal
+import DatadogTrace
 
 /// A type turning succeeding view-tree and touch snapshots into sequence of Mobile Session Replay records.
 ///
@@ -80,10 +81,16 @@ internal class Processor: Processing {
     }
 
     private func processSync(viewTreeSnapshot: ViewTreeSnapshot, touchSnapshot: TouchSnapshot?) {
+        let span = Tracer.shared().startSpan(operationName: "Processing")
+        let flatteningSpan = Tracer.shared().startSpan(operationName: "Flattening", childOf: span.context)
         let flattenedNodes = nodesFlattener.flattenNodes(in: viewTreeSnapshot)
+        flatteningSpan.finish()
+
+        let wireframeSpan = Tracer.shared().startSpan(operationName: "Building wireframes", childOf: span.context)
         let wireframes: [SRWireframe] = flattenedNodes
             .map { node in node.wireframesBuilder }
             .flatMap { nodeBuilder in nodeBuilder.buildWireframes(with: wireframesBuilder) }
+        wireframeSpan.finish()
 
         #if DEBUG
         interceptWireframes?(wireframes)
@@ -103,8 +110,10 @@ internal class Processor: Processing {
             // No change to RUM context means we're recording new records within the same RUM view.
             // Such can be added to current segment.
             // Prefer creating "incremental snapshot" records but fallback to "full snapshot" (unexpected):
+            let diffSpan = Tracer.shared().startSpan(operationName: "Diff", childOf: span.context)
             let record = recordsBuilder.createIncrementalSnapshotRecord(from: viewTreeSnapshot, with: wireframes, lastWireframes: lastWireframes)
             record.flatMap { records.append($0) }
+            diffSpan.finish()
 
             // Create viewport orientation change record
             if let lastSnapshot = lastSnapshot {
@@ -138,6 +147,7 @@ internal class Processor: Processing {
         // Track state:
         lastSnapshot = viewTreeSnapshot
         lastWireframes = wireframes
+        span.finish()
     }
 
     private func trackRecord(key: String, value: Int64) {

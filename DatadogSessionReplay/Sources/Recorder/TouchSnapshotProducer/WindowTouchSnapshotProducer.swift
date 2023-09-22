@@ -7,6 +7,7 @@
 #if os(iOS)
 import Foundation
 import UIKit
+import DatadogTrace
 
 /// Produces `TouchSnapshots` of the key window in current application.
 internal class WindowTouchSnapshotProducer: TouchSnapshotProducer, UIEventHandler {
@@ -22,7 +23,9 @@ internal class WindowTouchSnapshotProducer: TouchSnapshotProducer, UIEventHandle
         self.windowObserver = windowObserver
     }
 
-    func takeSnapshot(context: Recorder.Context) -> TouchSnapshot? {
+    func 
+    takeSnapshot(context: Recorder.Context) -> TouchSnapshot? {
+        let span = Tracer.shared().startSpan(operationName: "Touch Snapshot")
         if let offset = context.viewServerTimeOffset {
             buffer = buffer.compactMap {
                 var touch = $0
@@ -33,7 +36,10 @@ internal class WindowTouchSnapshotProducer: TouchSnapshotProducer, UIEventHandle
         guard let firstTouch = buffer.first else {
             return nil
         }
-        defer { buffer = [] }
+        defer {
+            buffer = []
+            span.finish()
+        }
 
         return TouchSnapshot(date: firstTouch.date, touches: buffer)
     }
