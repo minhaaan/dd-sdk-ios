@@ -466,6 +466,8 @@
 		A7DA18042AB0C91200F76337 /* DDUIKitRUMViewsPredicateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DA18022AB0C8A700F76337 /* DDUIKitRUMViewsPredicateTests.swift */; };
 		A7DA18052AB0C91300F76337 /* DDUIKitRUMViewsPredicateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DA18022AB0C8A700F76337 /* DDUIKitRUMViewsPredicateTests.swift */; };
 		A7DA18072AB0CA5E00F76337 /* DDUIKitRUMActionsPredicateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DA18062AB0CA4700F76337 /* DDUIKitRUMActionsPredicateTests.swift */; };
+		A7DEBF042AC34C1100673C45 /* DatadogTrace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D25EE93429C4C3C300CE3839 /* DatadogTrace.framework */; };
+		A7DEBF052AC34C1100673C45 /* DatadogTrace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D25EE93429C4C3C300CE3839 /* DatadogTrace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A7EA11622AB0CE6C00C73970 /* DDUIKitRUMActionsPredicateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DA18062AB0CA4700F76337 /* DDUIKitRUMActionsPredicateTests.swift */; };
 		D20605A3287464F40047275C /* ContextValuePublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20605A2287464F40047275C /* ContextValuePublisher.swift */; };
 		D20605A4287464F40047275C /* ContextValuePublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20605A2287464F40047275C /* ContextValuePublisher.swift */; };
@@ -1558,6 +1560,13 @@
 			remoteGlobalIDString = 61B7885325C180CB002675B5;
 			remoteInfo = DatadogCrashReporting;
 		};
+		A7DEBF062AC34C1100673C45 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 61133B79242393DE00786299 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D25EE93329C4C3C300CE3839;
+			remoteInfo = "DatadogTrace iOS";
+		};
 		D206BB872A41CA6800F43BA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 61133B79242393DE00786299 /* Project object */;
@@ -1774,6 +1783,17 @@
 				6199365B265BB6A6009D7EA8 /* DatadogCrashReporting.framework in ⚙️ Embed Framework Dependencies */,
 			);
 			name = "⚙️ Embed Framework Dependencies";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7DEBF082AC34C1100673C45 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A7DEBF052AC34C1100673C45 /* DatadogTrace.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D240684527CE6C9E00C04F44 /* ⚙️ Embed Framework Dependencies */ = {
@@ -2663,6 +2683,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6133D1EF2A6ED9E100384BEF /* DatadogInternal.framework in Frameworks */,
+				A7DEBF042AC34C1100673C45 /* DatadogTrace.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5967,11 +5988,13 @@
 				6133D1E92A6ED9E100384BEF /* Sources */,
 				6133D1EE2A6ED9E100384BEF /* Frameworks */,
 				6133D1F02A6ED9E100384BEF /* Resources */,
+				A7DEBF082AC34C1100673C45 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				6133D1E62A6ED9E100384BEF /* PBXTargetDependency */,
+				A7DEBF072AC34C1100673C45 /* PBXTargetDependency */,
 			);
 			name = "DatadogSessionReplay iOS";
 			productName = "DatadogWebViewTracking iOS";
@@ -8859,6 +8882,11 @@
 			isa = PBXTargetDependency;
 			target = 61B7885325C180CB002675B5 /* DatadogCrashReporting iOS */;
 			targetProxy = 61B7885E25C180CB002675B5 /* PBXContainerItemProxy */;
+		};
+		A7DEBF072AC34C1100673C45 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D25EE93329C4C3C300CE3839 /* DatadogTrace iOS */;
+			targetProxy = A7DEBF062AC34C1100673C45 /* PBXContainerItemProxy */;
 		};
 		D206BB882A41CA6800F43BA2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

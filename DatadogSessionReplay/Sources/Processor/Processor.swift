@@ -110,10 +110,8 @@ internal class Processor: Processing {
             // No change to RUM context means we're recording new records within the same RUM view.
             // Such can be added to current segment.
             // Prefer creating "incremental snapshot" records but fallback to "full snapshot" (unexpected):
-            let diffSpan = Tracer.shared().startSpan(operationName: "Diff", childOf: span.context)
             let record = recordsBuilder.createIncrementalSnapshotRecord(from: viewTreeSnapshot, with: wireframes, lastWireframes: lastWireframes)
             record.flatMap { records.append($0) }
-            diffSpan.finish()
 
             // Create viewport orientation change record
             if let lastSnapshot = lastSnapshot {

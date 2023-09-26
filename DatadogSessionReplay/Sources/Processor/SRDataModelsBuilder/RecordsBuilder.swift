@@ -7,6 +7,7 @@
 #if os(iOS)
 import Foundation
 import DatadogInternal
+import DatadogTrace
 
 /// Builds SR records from VTS snapshots to transport wireframes (see `WireframesBuilder`).
 /// There are several types of records in SR format, including Full Snapshot Record (FSR contains all wireframes
@@ -49,6 +50,11 @@ internal class RecordsBuilder {
 
     /// Creates Full Snapshot Record - a self-contained description of a single frame of the replay.
     func createFullSnapshotRecord(from snapshot: ViewTreeSnapshot, wireframes: [SRWireframe]) -> SRRecord {
+        let fullSnapshotSpan = Tracer.shared().startSpan(operationName: "Full Snapshot")
+
+        defer {
+            fullSnapshotSpan.finish()
+        }
         let record = SRFullSnapshotRecord(
             data: .init(wireframes: wireframes),
             timestamp: snapshot.date.timeIntervalSince1970.toInt64Milliseconds
@@ -73,11 +79,18 @@ internal class RecordsBuilder {
     }
 
     private func createIncrementalSnapshotRecord(from snapshot: ViewTreeSnapshot, newWireframes: [SRWireframe], lastWireframes: [SRWireframe]) throws -> SRRecord? {
+
+        let diffSpan = Tracer.shared().startSpan(operationName: "Diffing")
+
         let diff = try computeDiff(oldArray: lastWireframes, newArray: newWireframes)
+
+        diffSpan.finish()
 
         if diff.isEmpty {
             return nil
         }
+
+        let incrementSpan = Tracer.shared().startSpan(operationName: "Incremental Snapshot")
 
         let record = SRIncrementalSnapshotRecord(
             data: .mutationData(
@@ -91,7 +104,7 @@ internal class RecordsBuilder {
             ),
             timestamp: snapshot.date.timeIntervalSince1970.toInt64Milliseconds
         )
-
+        incrementSpan.finish()
         return .incrementalSnapshotRecord(value: record)
     }
 
