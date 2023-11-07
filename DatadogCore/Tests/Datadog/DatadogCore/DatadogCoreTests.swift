@@ -45,7 +45,6 @@ class DatadogCoreTests: XCTestCase {
             applicationVersion: .mockAny(),
             backgroundTasksEnabled: .mockAny()
         )
-        defer { core.flushAndTearDown() }
 
         let requestBuilderSpy = FeatureRequestBuilderSpy()
         try core.register(feature: FeatureMock(requestBuilder: requestBuilderSpy))
@@ -91,7 +90,6 @@ class DatadogCoreTests: XCTestCase {
             applicationVersion: .mockAny(),
             backgroundTasksEnabled: .mockAny()
         )
-        defer { core.flushAndTearDown() }
 
         let requestBuilderSpy = FeatureRequestBuilderSpy()
         try core.register(feature: FeatureMock(requestBuilder: requestBuilderSpy))
@@ -145,7 +143,6 @@ class DatadogCoreTests: XCTestCase {
             applicationVersion: .mockAny(),
             backgroundTasksEnabled: .mockAny()
         )
-        defer { core.flushAndTearDown() }
 
         let requestBuilderSpy = FeatureRequestBuilderSpy()
         try core.register(feature: FeatureMock(requestBuilder: requestBuilderSpy))
@@ -237,5 +234,40 @@ class DatadogCoreTests: XCTestCase {
         XCTAssertEqual(storage2?.authorizedFilesOrchestrator.performance.maxFileSize, 123)
         XCTAssertEqual(storage2?.authorizedFilesOrchestrator.performance.maxFileAgeForWrite, 95)
         XCTAssertEqual(storage2?.authorizedFilesOrchestrator.performance.minFileAgeForRead, 105)
+    }
+
+    func testWhenStoppingInstance_itDoesNotUploadEvents() throws {
+        // Given
+        let core = DatadogCore(
+            directory: temporaryCoreDirectory,
+            dateProvider: SystemDateProvider(),
+            initialConsent: .granted,
+            performance: .mockRandom(),
+            httpClient: HTTPClientMock(),
+            encryption: nil,
+            contextProvider: .mockAny(),
+            applicationVersion: .mockAny(),
+            backgroundTasksEnabled: .mockAny()
+        )
+
+        let requestBuilderSpy = FeatureRequestBuilderSpy()
+        try core.register(feature: FeatureMock(requestBuilder: requestBuilderSpy))
+        let scope = try XCTUnwrap(core.scope(for: FeatureMock.name))
+
+        // When
+        scope.eventWriteContext { context, writer in
+            writer.write(value: FeatureMock.Event(event: "should not be sent"))
+        }
+
+        core.stop()
+
+        scope.eventWriteContext { context, writer in
+            writer.write(value: FeatureMock.Event(event: "should not be sent"))
+        }
+
+        // Then
+        XCTAssertNil(core.scope(for: FeatureMock.name))
+        core.flushAndTearDown()
+        XCTAssertEqual(requestBuilderSpy.requestParameters.count, 0, "It should not send any request")
     }
 }
