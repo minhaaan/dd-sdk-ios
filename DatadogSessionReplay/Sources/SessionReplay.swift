@@ -25,7 +25,7 @@ public struct SessionReplay {
         do {
             try enableOrThrow(with: configuration, in: core)
         } catch let error {
-           consolePrint("\(error)")
+            consolePrint("\(error)", .error)
        }
     }
 

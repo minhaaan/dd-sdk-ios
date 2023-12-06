@@ -70,7 +70,7 @@ public struct Logs {
         do {
             try core.register(feature: feature)
         } catch {
-            consolePrint("\(error)")
+            consolePrint("\(error)", .error)
         }
     }
 }

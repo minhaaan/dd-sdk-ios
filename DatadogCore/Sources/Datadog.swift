@@ -352,7 +352,7 @@ public struct Datadog {
     ) -> DatadogCoreProtocol {
         // TODO: RUMM-511 remove this warning
         #if targetEnvironment(macCatalyst)
-        consolePrint("⚠️ Catalyst is not officially supported by Datadog SDK: some features may NOT be functional!")
+        consolePrint("⚠️ Catalyst is not officially supported by Datadog SDK: some features may NOT be functional!", .warn)
         #endif
 
         do {
@@ -362,7 +362,7 @@ public struct Datadog {
                 instanceName: instanceName
             )
         } catch {
-            consolePrint("\(error)")
+            consolePrint("\(error)", .error)
             return NOPDatadogCore()
         }
     }
@@ -378,7 +378,7 @@ public struct Datadog {
 
         let debug = configuration.processInfo.arguments.contains(LaunchArguments.Debug)
         if debug {
-            consolePrint("⚠️ Overriding verbosity, and upload frequency due to \(LaunchArguments.Debug) launch argument")
+            consolePrint("⚠️ Overriding verbosity, and upload frequency due to \(LaunchArguments.Debug) launch argument", .warn)
             Datadog.verbosityLevel = .debug
         }
 

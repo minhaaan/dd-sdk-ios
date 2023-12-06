@@ -22,7 +22,7 @@ public struct RUM {
         do {
             try enableOrThrow(with: configuration, in: core)
         } catch let error {
-           consolePrint("\(error)")
+            consolePrint("\(error)", .error)
        }
     }
 
@@ -73,7 +73,7 @@ public struct RUM {
         }
 
         if configuration.debugViews {
-            consolePrint("⚠️ Overriding RUM debugging with DD_DEBUG_RUM launch argument")
+            consolePrint("⚠️ Overriding RUM debugging with DD_DEBUG_RUM launch argument", .warn)
             rum.monitor.debug = true
         }
 
